@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pendaftaran Maulid Nabi - PP Roudlatul Malikiyah</title>
+  <!-- Library QR Code -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; }
+    body { background: #f0fdf4; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+    .card { background: white; padding: 30px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); width: 100%; max-width: 520px; border-top: 6px solid #15803d; }
+    
+    .header { text-align: center; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 2px solid #e2e8f0; }
+    .header h3 { color: #166534; font-size: 1.1rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+    .header h1 { color: #15803d; font-size: 1.35rem; margin: 6px 0; font-weight: 800; line-height: 1.3; }
+    .header h2 { color: #047857; font-size: 1.05rem; font-weight: 600; }
+    
+    .form-group { margin-bottom: 16px; }
+    label { display: block; margin-bottom: 6px; font-weight: 600; color: #334155; font-size: 0.95rem; }
+    input { width: 100%; padding: 12px 14px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 14px; transition: border-color 0.2s; }
+    input:focus { outline: none; border-color: #15803d; }
+    
+    button { width: 100%; padding: 13px; background: #15803d; color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 1rem; cursor: pointer; transition: background 0.2s; margin-top: 10px; }
+    button:hover { background: #166534; }
+    button:disabled { background: #94a3b8; cursor: not-allowed; }
+    
+    #qr-result { margin-top: 25px; text-align: center; display: none; padding: 20px; background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0; }
+    
+    /* Container Kuis Tiket / ID Card untuk di-download */
+    #ticket-card {
+      background: linear-gradient(135deg, #052e16 0%, #14532d 100%);
+      color: white;
+      padding: 24px 20px;
+      border-radius: 16px;
+      margin: 15px 0;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+      border: 2px solid #22c55e;
+      position: relative;
+    }
+
+    .ticket-badge {
+      display: inline-block;
+      background: #facc15;
+      color: #713f12;
+      font-size: 0.8rem;
+      font-weight: 800;
+      padding: 4px 12px;
+      border-radius: 20px;
+      letter-spacing: 0.5px;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+    }
+
+    .ticket-header h4 {
+      font-size: 0.95rem;
+      color: #bbf7d0;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .ticket-header h2 {
+      font-size: 1.15rem;
+      color: #ffffff;
+      font-weight: 800;
+      line-height: 1.3;
+    }
+    .ticket-header h3 {
+      font-size: 0.95rem;
+      color: #86efac;
+      font-weight: 600;
+      margin-top: 2px;
+    }
+
+    .ticket-qr-box {
+      background: white;
+      padding: 12px;
+      border-radius: 12px;
+      display: inline-block;
+      margin: 16px 0 12px 0;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    #qrcode {
+      display: flex;
+      justify-content: center;
+    }
+
+    .ticket-user-info {
+      border-top: 1px dashed rgba(255,255,255,0.3);
+      padding-top: 12px;
+      margin-top: 4px;
+    }
+
+    .ticket-user-name {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: 0.5px;
+    }
+
+    .ticket-user-code {
+      font-size: 0.85rem;
+      color: #fef08a;
+      font-weight: 700;
+      margin-top: 2px;
+      letter-spacing: 1px;
+    }
+    
+    .btn-download { background: #0284c7; margin-top: 12px; }
+    .btn-download:hover { background: #0369a1; }
+    .note { font-size: 12px; color: #64748b; margin-top: 10px; }
+    .loading-spinner { display: inline-block; width: 18px; height: 18px; border: 3px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: white; animation: spin 1s ease-in-out infinite; vertical-align: middle; margin-right: 8px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <div class="header">
+    <h3>Form Daftar Hadir</h3>
+    <h1>MAULID NABI PP ROUDLATUL MALIKIYAH</h1>
+    <h2>BERSAMA USTADZAH HALIMAH ALAYDRUS</h2>
+  </div>
+
+  <form id="registrationForm">
+    <div class="form-group">
+      <label for="nama">Nama Lengkap</label>
+      <input type="text" id="nama" required placeholder="Masukkan Nama Lengkap">
+    </div>
+    <div class="form-group">
+      <label for="alamat">Alamat</label>
+      <input type="text" id="alamat" required placeholder="Masukkan Alamat / Kota asal">
+    </div>
+    <div class="form-group">
+      <label for="nohp">No. HP / WhatsApp</label>
+      <input type="tel" id="nohp" required placeholder="Contoh: 08123456789">
+    </div>
+    <button type="submit" id="btnSubmit">Daftar & Buat QR Code</button>
+  </form>
+
+  <div id="qr-result">
+    <h3 style="color: #16a34a; font-size: 1.1rem;">✅ Pendaftaran Berhasil!</h3>
+    <p style="font-size: 0.85rem; color: #475569; margin-top: 4px;">Data telah tersimpan di sistem.</p>
+    
+    <!-- Kartu Tiket yang didesain menarik -->
+    <div id="ticket-card">
+      <div class="ticket-badge">✨ SIAP HADIR</div>
+      <div class="ticket-header">
+        <h4>AKU SIAP HADIR PADA ACARA</h4>
+        <h2>MAULID NABI PP. ROUDLATUL MALIKIYAH</h2>
+        <h3>BERSAMA USTADZAH HALIMAH ALAYDRUS</h3>
+      </div>
+
+      <div class="ticket-qr-box">
+        <div id="qrcode"></div>
+      </div>
+
+      <div class="ticket-user-info">
+        <div class="ticket-user-name" id="ticket-nama">NAMA PESERTA</div>
+        <div class="ticket-user-code" id="ticket-code">ID: MN-0000-0000</div>
+      </div>
+    </div>
+
+    <button type="button" class="btn-download" id="btnDownload">📥 Download Kartu / Tiket QR Code</button>
+    <p class="note">Simpan atau screenshot kartu di atas sebagai bukti kehadiran acara.</p>
+  </div>
+</div>
+
+<script>
+  // GANTI URL INI DENGAN URL WEB APP GOOGLE APPS SCRIPT ANDA
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz_bZAaSHOekrGkuDUVGVX7ODSei5bMoovyQ6KCftiezKAHHrWAbnTh2Vs6aqceddUPhw/exec";
+
+  const form = document.getElementById('registrationForm');
+  const btnSubmit = document.getElementById('btnSubmit');
+  const qrResult = document.getElementById('qr-result');
+  const qrcodeContainer = document.getElementById('qrcode');
+  const ticketNama = document.getElementById('ticket-nama');
+  const ticketCode = document.getElementById('ticket-code');
+  const btnDownload = document.getElementById('btnDownload');
+
+  let currentData = {};
+
+  form.addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const nama = document.getElementById('nama').value.trim();
+    const alamat = document.getElementById('alamat').value.trim();
+    const nohp = document.getElementById('nohp').value.trim();
+
+    // Buat ID Unik Peserta
+    const idPeserta = `MN-${nohp.slice(-4)}-${Date.now().toString().slice(-4)}`;
+
+    currentData = {
+      id: idPeserta,
+      nama: nama,
+      alamat: alamat,
+      nohp: nohp
+    };
+
+    const payload = {
+      action: "register",
+      id: idPeserta,
+      nama: nama,
+      alamat: alamat,
+      nohp: nohp
+    };
+
+    // UI Loading
+    btnSubmit.disabled = true;
+    btnSubmit.innerHTML = `<span class="loading-spinner"></span>Menyimpan Data...`;
+
+    try {
+      // Kirim data ke Google Sheets via Apps Script jika URL sudah diisi
+      if (SCRIPT_URL && !SCRIPT_URL.includes("GANTI_DENGAN_URL")) {
+        await fetch(SCRIPT_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+      }
+
+      // Generate QR Code dari JSON data
+      qrcodeContainer.innerHTML = '';
+      const qrJsonString = JSON.stringify(currentData);
+
+      new QRCode(qrcodeContainer, {
+        text: qrJsonString,
+        width: 170,
+        height: 170,
+        colorDark : "#000000",
+        colorLight : "#ffffff",
+        correctLevel : QRCode.CorrectLevel.H
+      });
+
+      ticketNama.innerText = nama.toUpperCase();
+      ticketCode.innerText = `ID: ${idPeserta}`;
+      qrResult.style.display = 'block';
+
+      // Scroll halus ke Kartu QR Code
+      qrResult.scrollIntoView({ behavior: 'smooth' });
+
+    } catch (err) {
+      alert("Terjadi kesalahan saat menyimpan data. Silakan coba lagi.");
+      console.error(err);
+    } finally {
+      btnSubmit.disabled = false;
+      btnSubmit.innerText = "Daftar & Buat QR Code";
+    }
+  });
+
+  // Fungsi Download Tiket Bergambar Cantik menggunakan HTML5 Canvas
+  btnDownload.addEventListener('click', function() {
+    const imgEl = qrcodeContainer.querySelector('img');
+    const canvasEl = qrcodeContainer.querySelector('canvas');
+    let qrImageSrc = '';
+
+    if (imgEl && imgEl.src) {
+      qrImageSrc = imgEl.src;
+    } else if (canvasEl) {
+      qrImageSrc = canvasEl.toDataURL("image/png");
+    }
+
+    if (!qrImageSrc) {
+      alert("QR Code belum siap!");
+      return;
+    }
+
+    // Membuat Canvas Dinamis untuk Gambar Kartu
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+
+    // Ukuran Kartu Tiket
+    const width = 500;
+    const height = 650;
+    canvas.width = width;
+    canvas.height = height;
+
+    // Background Gradient Hijau Islami
+    const grad = ctx.createLinearGradient(0, 0, width, height);
+    grad.addColorStop(0, '#052e16');
+    grad.addColorStop(1, '#14532d');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, width, height);
+
+    // Border Emas / Hijau Terang
+    ctx.strokeStyle = '#22c55e';
+    ctx.lineWidth = 6;
+    ctx.strokeRect(10, 10, width - 20, height - 20);
+
+    // Badge "SIAP HADIR"
+    ctx.fillStyle = '#facc15';
+    ctx.beginPath();
+    ctx.roundRect(width/2 - 60, 35, 120, 28, 14);
+    ctx.fill();
+
+    ctx.fillStyle = '#713f12';
+    ctx.font = 'bold 12px "Segoe UI", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('✨ SIAP HADIR', width/2, 53);
+
+    // Header Teks
+    ctx.fillStyle = '#bbf7d0';
+    ctx.font = 'bold 14px "Segoe UI", sans-serif';
+    ctx.fillText('AKU SIAP HADIR PADA ACARA', width/2, 95);
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 18px "Segoe UI", sans-serif';
+    ctx.fillText('MAULID NABI PP. ROUDLATUL MALIKIYAH', width/2, 125);
+
+    ctx.fillStyle = '#86efac';
+    ctx.font = 'bold 15px "Segoe UI", sans-serif';
+    ctx.fillText('BERSAMA USTADZAH HALIMAH ALAYDRUS', width/2, 150);
+
+    // Gambar QR Code
+    const qrImg = new Image();
+    qrImg.onload = function() {
+      // Putih latar QR Code
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.roundRect(width/2 - 110, 180, 220, 220, 12);
+      ctx.fill();
+
+      // Draw QR Image
+      ctx.drawImage(qrImg, width/2 - 95, 195, 190, 190);
+
+      // Garis Pembatas
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(40, 435);
+      ctx.lineTo(width - 40, 435);
+      ctx.stroke();
+
+      // Nama User
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 22px "Segoe UI", sans-serif';
+      ctx.fillText((currentData.nama || 'NAMA PESERTA').toUpperCase(), width/2, 475);
+
+      // Alamat
+      ctx.fillStyle = '#cbd5e1';
+      ctx.font = '14px "Segoe UI", sans-serif';
+      ctx.fillText((currentData.alamat || ''), width/2, 502);
+
+      // ID Kode Peserta
+      ctx.fillStyle = '#fef08a';
+      ctx.font = 'bold 16px "Segoe UI", sans-serif';
+      ctx.fillText(`ID: ${currentData.id || ''}`, width/2, 535);
+
+      // Footer Note
+      ctx.fillStyle = '#86efac';
+      ctx.font = 'italic 12px "Segoe UI", sans-serif';
+      ctx.fillText('*Tunjukkan gambar ini kepada panitia saat kedatangan', width/2, 590);
+
+      // Trigger Download Gambar Canvas
+      const downloadLink = document.createElement('a');
+      downloadLink.href = canvas.toDataURL('image/png');
+      const namaFile = (currentData.nama || 'Peserta').replace(/[^a-zA-Z0-9]/g, '_');
+      downloadLink.download = `Tiket_Maulid_${namaFile}.png`;
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+    };
+
+    qrImg.src = qrImageSrc;
+  });
+</script>
+
+</body>
+</html>
